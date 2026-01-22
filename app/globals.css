@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+@theme {
+  /* Brand Colors - Gen Z Aesthetic */
+  --color-primary: #FF6B6B;
+  --color-primary-light: #FF8787;
+  --color-primary-dark: #FA5252;
+  
+  --color-secondary: #22B8CF;
+  --color-secondary-light: #3BC9DB;
+  --color-secondary-dark: #15AABF;
+  
+  --color-accent-yellow: #FFD43B;
+  --color-accent-green: #51CF66;
+  --color-accent-purple: #9775FA;
+  
+  /* Neutrals */
+  --color-gray-50: #F8F9FA;
+  --color-gray-100: #F1F3F5;
+  --color-gray-200: #E9ECEF;
+  --color-gray-300: #DEE2E6;
+  --color-gray-500: #ADB5BD;
+  --color-gray-700: #495057;
+  --color-gray-900: #212529;
+
+  /* Fonts */
+  --font-heading: 'Be Vietnam Pro', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+/* Base Styles */
+@layer base {
+  body {
+    @apply font-body text-gray-900 bg-gray-50;
+    -webkit-font-smoothing: antialiased;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading font-bold;
+  }
+}
+
+/* Utilities for Glassmorphism & Animations */
+@layer utilities {
+  .glass {
+    @apply bg-white/80 backdrop-blur-md border border-white/20;
+  }
+  
+  .glass-dark {
+    @apply bg-gray-900/80 backdrop-blur-md border border-gray-700/50;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Map specific fixes */
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+}
