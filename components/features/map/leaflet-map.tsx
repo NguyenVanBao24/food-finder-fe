@@ -45,6 +45,12 @@ const DefaultIcon = L.icon({
 });
 
 
+// Da Nang geographic bounds
+const DA_NANG_BOUNDS: L.LatLngBoundsExpression = [
+    [15.8500, 107.8000], // South West
+    [16.2500, 108.4500]  // North East
+];
+
 export default function LeafletMap() {
     const mapRef = useRef<LeafletMapInstance | null>(null);
     const { locations } = useLocations();
@@ -54,6 +60,9 @@ export default function LeafletMap() {
             <MapContainer
                 center={[16.0544, 108.2022]} // Da Nang coordinates
                 zoom={13}
+                minZoom={11}
+                maxBounds={DA_NANG_BOUNDS}
+                maxBoundsViscosity={1.0}
                 className="w-full h-full z-0"
                 zoomControl={false}
                 ref={mapRef}

@@ -4,17 +4,20 @@ import { useLocation } from '@/lib/hooks/use-location';
 import { LocationHero } from '@/components/features/locations/detail/location-hero';
 import { LocationInfo } from '@/components/features/locations/detail/location-info';
 import { CommentsList } from '@/components/features/comments/comments-list';
-import { Loader2, ArrowLeft } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation';
+import { TagVoting } from '@/components/features/locations/detail/tag-voting';
+import { PhotoGallery } from '@/components/features/locations/detail/photo-gallery';
+import { Loader2 } from 'lucide-react';
+
+interface LocationClientPageProps {
+    id: string;
+}
 
 export default function LocationDetailClientPage({ id }: { id: string }) {
-    const router = useRouter();
-    const { location, isLoading, isError } = useLocation(id);
+    const { location, isLoading, isError, mutate } = useLocation(id);
 
     if (isLoading) {
         return (
-            <div className="h-screen w-full flex items-center justify-center bg-gray-50">
+            <div className="flex h-screen items-center justify-center">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
         );
@@ -22,47 +25,42 @@ export default function LocationDetailClientPage({ id }: { id: string }) {
 
     if (isError || !location) {
         return (
-            <div className="h-screen w-full flex flex-col items-center justify-center bg-gray-50 gap-4">
-                <h2 className="text-xl font-bold text-gray-900">Không tìm thấy địa điểm</h2>
-                <Button onClick={() => router.back()}>Quay lại</Button>
+            <div className="flex h-screen items-center justify-center">
+                <p className="text-red-500">Đã có lỗi xảy ra khi tải thông tin địa điểm.</p>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-20">
-            {/* Absolute Back Button */}
-            <Button
-                variant="secondary"
-                size="icon"
-                className="fixed top-4 left-4 z-50 rounded-full bg-white/80 backdrop-blur shadow-sm hover:bg-white"
-                onClick={() => router.back()}
-            >
-                <ArrowLeft className="h-5 w-5 text-gray-900" />
-            </Button>
-
+        <div className="min-h-screen bg-gray-50/50 pb-20">
             <LocationHero location={location} />
 
-            <div className="container mx-auto max-w-5xl px-4 mt-8">
+            <div className="container mx-auto max-w-5xl px-4 -mt-8 relative z-10">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    {/* Main Content */}
                     <div className="lg:col-span-2 space-y-8">
-                        {/* Gallery Placeholder - To Implement */}
+                        {/* Tags & Voting Section */}
+                        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                            <h3 className="text-xl font-bold mb-4">Ưu điểm nổi bật</h3>
+                            <TagVoting locationId={location.id} />
+                        </div>
+
+                        {/* Photos Section */}
+                        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                            <PhotoGallery
+                                photos={location.photos || []}
+                                locationId={location.id}
+                                onRefresh={() => mutate()}
+                            />
+                        </div>
 
                         {/* Comments Section */}
-                        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 min-h-[400px]">
+                        <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
                             <CommentsList locationId={location.id} />
                         </div>
                     </div>
 
-                    {/* Sidebar Info */}
-                    <div className="space-y-6">
+                    <div className="lg:col-span-1">
                         <LocationInfo location={location} />
-
-                        {/* Map Placeholder */}
-                        <div className="bg-gray-200 rounded-xl h-64 w-full flex items-center justify-center text-gray-400">
-                            Mini Map
-                        </div>
                     </div>
                 </div>
             </div>

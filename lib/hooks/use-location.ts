@@ -3,7 +3,7 @@ import { fetchWithMeta } from '@/lib/api/client';
 import { ApiResponse, Location } from '@/lib/types';
 
 export function useLocation(id: string | null) {
-    const { data, error, isLoading } = useSWR<ApiResponse<Location>>(
+    const { data, error, isLoading, mutate } = useSWR<ApiResponse<Location>>(
         id ? `/locations/${id}` : null,
         fetchWithMeta
     );
@@ -12,5 +12,6 @@ export function useLocation(id: string | null) {
         location: data?.data,
         isLoading,
         isError: error,
+        mutate,
     };
 }
