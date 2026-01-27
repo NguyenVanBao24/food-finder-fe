@@ -47,9 +47,14 @@ export interface LocationFilters {
     search?: string;
     cuisine?: string;
     district?: string;
-    priceRange?: string;
+    min_price?: number;
+    max_price?: number;
     category?: string;
     category_id?: string;
+    tag_ids?: string[];
+    max_distance?: number;
+    is_popular?: boolean;
+    sort_by?: 'distance' | 'rating' | 'price' | 'popular';
     page?: number;
     limit?: number;
 }

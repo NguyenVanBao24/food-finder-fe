@@ -5,15 +5,15 @@
   --color-primary: #FF6B6B;
   --color-primary-light: #FF8787;
   --color-primary-dark: #FA5252;
-  
+
   --color-secondary: #22B8CF;
   --color-secondary-light: #3BC9DB;
   --color-secondary-dark: #15AABF;
-  
+
   --color-accent-yellow: #FFD43B;
   --color-accent-green: #51CF66;
   --color-accent-purple: #9775FA;
-  
+
   /* Neutrals */
   --color-gray-50: #F8F9FA;
   --color-gray-100: #F1F3F5;
@@ -34,8 +34,13 @@
     @apply font-body text-gray-900 bg-gray-50;
     -webkit-font-smoothing: antialiased;
   }
-  
-  h1, h2, h3, h4, h5, h6 {
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-heading font-bold;
   }
 }
@@ -45,13 +50,31 @@
   .glass {
     @apply bg-white/80 backdrop-blur-md border border-white/20;
   }
-  
+
   .glass-dark {
     @apply bg-gray-900/80 backdrop-blur-md border border-gray-700/50;
   }
 
   .text-balance {
     text-wrap: balance;
+  }
+
+  .beauty-scrollbar::-webkit-scrollbar {
+    height: 3px;
+    width: 3px;
+  }
+
+  .beauty-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .beauty-scrollbar::-webkit-scrollbar-thumb {
+    background: #E9ECEF;
+    border-radius: 10px;
+  }
+
+  .beauty-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #FF6B6B;
   }
 }
 
