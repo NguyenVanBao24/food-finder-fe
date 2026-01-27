@@ -10,6 +10,9 @@ import { useUIStore } from '@/lib/store/ui-store';
 import { useDebounce } from '@/lib/hooks/use-debounce';
 import { useEffect, useState } from 'react';
 
+import { useCategories } from '@/lib/hooks/use-categories';
+import * as Icons from 'lucide-react';
+
 export default function HomePage() {
   const { filters, setFilters } = useUIStore();
   const [searchTerm, setSearchTerm] = useState(filters.search || '');
@@ -20,39 +23,38 @@ export default function HomePage() {
   }, [debouncedSearch, setFilters]);
 
   const { locations, isLoading, isError } = useLocations();
+  const { categories } = useCategories();
 
   return (
     <MainLayout>
       <div className="space-y-6 pb-20">
-        <div className="sticky top-0 bg-white z-10 pb-4 pt-1">
-          <h1 className="text-2xl font-heading font-bold text-gray-900 mb-4">
-            Khám phá
-          </h1>
-          <div className="flex gap-2">
-            <Input
-              placeholder="Tìm quán ăn, cafe, món ngon..."
-              icon={<Search className="h-4 w-4" />}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <Button variant="outline" size="icon" className="shrink-0">
-              <SlidersHorizontal className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
+        {/* ... search section ... */}
 
         <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
-          {['Tất cả', 'food', 'cafe', 'bar'].map((cat) => (
-            <Button
-              key={cat}
-              variant={filters.category === cat || (cat === 'Tất cả' && !filters.category) ? 'default' : 'outline'}
-              size="sm"
-              className="rounded-full whitespace-nowrap capitalize"
-              onClick={() => setFilters({ category: cat === 'Tất cả' ? undefined : cat })}
-            >
-              {cat === 'food' ? 'Quán ăn' : cat}
-            </Button>
-          ))}
+          <Button
+            variant={!filters.category_id ? 'default' : 'outline'}
+            size="sm"
+            className="rounded-full whitespace-nowrap"
+            onClick={() => setFilters({ category_id: undefined })}
+          >
+            Tất cả
+          </Button>
+
+          {categories.map((cat) => {
+            const IconComponent = (Icons as any)[cat.icon || 'Utensils'] || Icons.Utensils;
+            return (
+              <Button
+                key={cat.id}
+                variant={filters.category_id === cat.id ? 'default' : 'outline'}
+                size="sm"
+                className="rounded-full whitespace-nowrap flex items-center gap-2"
+                onClick={() => setFilters({ category_id: cat.id })}
+              >
+                <IconComponent className="h-3.5 w-3.5" />
+                {cat.name_vi}
+              </Button>
+            );
+          })}
         </div>
 
         <div className="space-y-4">

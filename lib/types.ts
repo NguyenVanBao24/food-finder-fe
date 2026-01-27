@@ -49,6 +49,7 @@ export interface LocationFilters {
     district?: string;
     priceRange?: string;
     category?: string;
+    category_id?: string;
     page?: number;
     limit?: number;
 }

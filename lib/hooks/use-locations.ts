@@ -11,6 +11,7 @@ export function useLocations() {
     const queryString = new URLSearchParams();
     if (filters.search) queryString.append('search', filters.search);
     if (filters.category) queryString.append('category', filters.category);
+    if (filters.category_id) queryString.append('category_id', filters.category_id);
     // Add other filters as needed
 
     const { data, error, isLoading } = useSWR<ApiResponse<Location[]>>(
