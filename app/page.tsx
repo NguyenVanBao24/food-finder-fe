@@ -3,7 +3,7 @@
 import { MainLayout } from '@/components/layout/main-layout';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, SlidersHorizontal, Loader2, X } from 'lucide-react';
+import { Search, SlidersHorizontal, Loader2 } from 'lucide-react';
 import { useLocations } from '@/lib/hooks/use-locations';
 import { LocationCard } from '@/components/features/locations/location-card';
 import { useUIStore } from '@/lib/store/ui-store';
@@ -14,6 +14,14 @@ import { useTags } from '@/lib/hooks/use-tags';
 import { LocationFilters } from '@/lib/types';
 import * as Icons from 'lucide-react';
 
+// Filter Components
+import { CategoryFilter } from '@/components/features/filters/category-filter';
+import { PriceFilter } from '@/components/features/filters/price-filter';
+import { TagsFilter } from '@/components/features/filters/tags-filter';
+import { DistanceFilter } from '@/components/features/filters/distance-filter';
+import { PopularFilter } from '@/components/features/filters/popular-filter';
+import { FilterModal } from '@/components/features/filters/filter-modal';
+
 export default function HomePage() {
   const { filters, setFilters } = useUIStore();
   const [searchTerm, setSearchTerm] = useState(filters.search || '');
@@ -22,6 +30,9 @@ export default function HomePage() {
 
   // Temporary filter state (not applied until user clicks "Áp dụng")
   const [tempFilters, setTempFilters] = useState<Partial<LocationFilters>>({});
+
+  // Full-screen modal state
+  const [expandedSection, setExpandedSection] = useState<'category' | 'price' | 'tags' | null>(null);
 
   useEffect(() => {
     setFilters({ search: debouncedSearch });
@@ -43,7 +54,7 @@ export default function HomePage() {
 
   const { locations, isLoading, isError } = useLocations();
   const { categories } = useCategories();
-  const { allTags, isLoading: tagsLoading } = useTags();
+  const { tags, isLoading: tagsLoading } = useTags();
 
   const handleApplyFilters = () => {
     setFilters(tempFilters);
@@ -69,9 +80,21 @@ export default function HomePage() {
     setTempFilters({ ...tempFilters, tag_ids: newTags });
   };
 
+  const priceRanges = [
+    { label: 'Tất cả', min: 0, max: 1000000 },
+    { label: 'Dưới 40k', min: 0, max: 40000 },
+    { label: '40k - 150k', min: 40000, max: 150000 },
+    { label: '150k - 450k', min: 150000, max: 450000 },
+    { label: '450k - 1tr', min: 450000, max: 1000000 },
+    { label: 'Trên 1tr', min: 1000000, max: 1000000 },
+    { label: 'Tùy chọn', min: 0, max: 0 }
+  ];
+
+
   return (
     <MainLayout>
       <div className="space-y-6 pb-20">
+        {/* Search Bar */}
         <div className="flex items-center gap-3">
           <Input
             placeholder="Tìm món ăn, địa điểm..."
@@ -127,124 +150,37 @@ export default function HomePage() {
         {/* Comprehensive Filter Panel - Shown when filter mode is ON */}
         {filterMode && (
           <div className="space-y-5 animate-in fade-in slide-in-from-top-2 duration-300">
-            {/* Categories */}
-            <div className="space-y-2">
-              <h3 className="text-sm font-semibold text-gray-700">Danh mục</h3>
-              <div className="flex gap-2 overflow-x-auto pb-2 beauty-scrollbar">
-                <Button
-                  variant={!tempFilters.category_id ? 'default' : 'outline'}
-                  size="sm"
-                  className="rounded-full whitespace-nowrap text-xs"
-                  onClick={() => setTempFilters({ ...tempFilters, category_id: undefined })}
-                >
-                  Tất cả
-                </Button>
-                {categories.map((cat) => {
-                  const IconComponent = (Icons as any)[cat.icon || 'Utensils'] || Icons.Utensils;
-                  return (
-                    <Button
-                      key={cat.id}
-                      variant={tempFilters.category_id === cat.id ? 'default' : 'outline'}
-                      size="sm"
-                      className="rounded-full whitespace-nowrap flex items-center gap-1.5 text-xs"
-                      onClick={() => setTempFilters({ ...tempFilters, category_id: cat.id })}
-                    >
-                      <IconComponent className="h-3 w-3" />
-                      {cat.name_vi}
-                    </Button>
-                  );
-                })}
-              </div>
-            </div>
+            <CategoryFilter
+              categories={categories}
+              tempFilters={tempFilters}
+              setTempFilters={setTempFilters}
+              onShowMore={() => setExpandedSection('category')}
+            />
 
-            {/* Price Range Slider */}
-            <div className="space-y-3">
-              <h3 className="text-sm font-semibold text-gray-700">Mức giá</h3>
-              <div className="space-y-2">
-                <div className="flex justify-between text-xs text-gray-600">
-                  <span>₫{(tempFilters.min_price || 0).toLocaleString()}</span>
-                  <span>₫{(tempFilters.max_price || 500000).toLocaleString()}</span>
-                </div>
-                <div className="space-y-1">
-                  <input
-                    type="range"
-                    min="0"
-                    max="500000"
-                    step="10000"
-                    value={tempFilters.min_price || 0}
-                    onChange={(e) => setTempFilters({ ...tempFilters, min_price: Number(e.target.value) })}
-                    className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
-                  />
-                  <input
-                    type="range"
-                    min="0"
-                    max="500000"
-                    step="10000"
-                    value={tempFilters.max_price || 500000}
-                    onChange={(e) => setTempFilters({ ...tempFilters, max_price: Number(e.target.value) })}
-                    className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
-                  />
-                </div>
-              </div>
-            </div>
+            <PriceFilter
+              priceRanges={priceRanges}
+              tempFilters={tempFilters}
+              setTempFilters={setTempFilters}
+              onShowMore={() => setExpandedSection('price')}
+            />
 
-            {/* Tags (Rating/Features) */}
-            <div className="space-y-2">
-              <h3 className="text-sm font-semibold text-gray-700">Đánh giá & Đặc điểm</h3>
-              {tagsLoading ? (
-                <div className="text-xs text-gray-400">Đang tải...</div>
-              ) : (
-                <div className="flex flex-wrap gap-2">
-                  {allTags.map((tag) => (
-                    <Button
-                      key={tag.id}
-                      variant={(tempFilters.tag_ids || []).includes(tag.id) ? 'default' : 'outline'}
-                      size="sm"
-                      className="rounded-full text-xs"
-                      onClick={() => toggleTag(tag.id)}
-                    >
-                      {tag.icon && <span className="mr-1">{tag.icon}</span>}
-                      {tag.name_vi}
-                    </Button>
-                  ))}
-                </div>
-              )}
-            </div>
+            <TagsFilter
+              tags={tags || []}
+              tagsLoading={tagsLoading}
+              tempFilters={tempFilters}
+              toggleTag={toggleTag}
+              onShowMore={() => setExpandedSection('tags')}
+            />
 
-            {/* Distance Slider */}
-            <div className="space-y-3">
-              <h3 className="text-sm font-semibold text-gray-700">Khoảng cách</h3>
-              <div className="space-y-2">
-                <div className="text-xs text-gray-600 text-center">
-                  Trong vòng {tempFilters.max_distance || 10} km
-                </div>
-                <input
-                  type="range"
-                  min="1"
-                  max="50"
-                  step="1"
-                  value={tempFilters.max_distance || 10}
-                  onChange={(e) => setTempFilters({ ...tempFilters, max_distance: Number(e.target.value) })}
-                  className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
-                />
-                <div className="flex justify-between text-xs text-gray-500">
-                  <span>1km</span>
-                  <span>50km</span>
-                </div>
-              </div>
-            </div>
+            <DistanceFilter
+              tempFilters={tempFilters}
+              setTempFilters={setTempFilters}
+            />
 
-            {/* Popular Toggle */}
-            <div className="space-y-2">
-              <Button
-                variant={tempFilters.is_popular ? 'default' : 'outline'}
-                size="sm"
-                className="rounded-xl w-full text-xs"
-                onClick={() => setTempFilters({ ...tempFilters, is_popular: !tempFilters.is_popular })}
-              >
-                {tempFilters.is_popular ? '✓ ' : ''}Chỉ hiển thị địa điểm phổ biến
-              </Button>
-            </div>
+            <PopularFilter
+              tempFilters={tempFilters}
+              setTempFilters={setTempFilters}
+            />
 
             {/* Apply and Reset Buttons */}
             <div className="flex gap-2 pt-2">
@@ -269,7 +205,7 @@ export default function HomePage() {
         )}
 
         {/* Location List - ALWAYS VISIBLE */}
-        <div className="space-y-4">
+        {!filterMode && <div className="space-y-4">
           {isLoading && (
             <div className="flex justify-center py-10">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -291,8 +227,20 @@ export default function HomePage() {
           {locations.map((location) => (
             <LocationCard key={location.id} location={location} />
           ))}
-        </div>
+        </div>}
       </div>
+
+      <FilterModal
+        expandedSection={expandedSection}
+        onClose={() => setExpandedSection(null)}
+        categories={categories}
+        priceRanges={priceRanges}
+        tags={tags || []}
+        tempFilters={tempFilters}
+        setTempFilters={setTempFilters}
+        toggleTag={toggleTag}
+      />
     </MainLayout>
   );
 }
+

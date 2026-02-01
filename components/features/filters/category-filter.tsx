@@ -1,0 +1,53 @@
+import { Button } from '@/components/ui/button';
+import * as Icons from 'lucide-react';
+import { LocationFilters } from '@/lib/types';
+
+interface CategoryFilterProps {
+    categories: any[];
+    tempFilters: Partial<LocationFilters>;
+    setTempFilters: (filters: Partial<LocationFilters>) => void;
+    onShowMore: () => void;
+}
+
+export function CategoryFilter({ categories, tempFilters, setTempFilters, onShowMore }: CategoryFilterProps) {
+    return (
+        <div className="space-y-3">
+            <h3 className="text-sm font-semibold text-gray-900">Danh mục</h3>
+            <div className="flex flex-wrap gap-2">
+                <Button
+                    variant={!tempFilters.category_id ? 'default' : 'outline'}
+                    size="sm"
+                    className="rounded-full whitespace-nowrap text-xs"
+                    onClick={() => setTempFilters({ ...tempFilters, category_id: undefined })}
+                >
+                    Tất cả
+                </Button>
+                {categories.slice(0, categories.length > 11 ? 10 : categories.length).map((cat) => {
+                    const IconComponent = (Icons as any)[cat.icon || 'Utensils'] || Icons.Utensils;
+                    return (
+                        <Button
+                            key={cat.id}
+                            variant={tempFilters.category_id === cat.id ? 'default' : 'outline'}
+                            size="sm"
+                            className="rounded-full whitespace-nowrap flex items-center gap-1.5 text-xs"
+                            onClick={() => setTempFilters({ ...tempFilters, category_id: cat.id })}
+                        >
+                            <IconComponent className="h-3 w-3" />
+                            {cat.name_vi}
+                        </Button>
+                    );
+                })}
+                {categories.length > 11 && (
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        className="rounded-full whitespace-nowrap text-xs text-primary border-primary"
+                        onClick={onShowMore}
+                    >
+                        Xem thêm...
+                    </Button>
+                )}
+            </div>
+        </div>
+    );
+}

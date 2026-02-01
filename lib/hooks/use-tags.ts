@@ -10,10 +10,7 @@ interface Tag {
 
 interface TagsResponse {
     success: boolean;
-    data: {
-        positive: Tag[];
-        negative: Tag[];
-    };
+    data: Tag[];
 }
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -25,10 +22,7 @@ export function useTags() {
     );
 
     return {
-        tags: data?.data,
-        allTags: data?.data ? [...data.data.positive, ...data.data.negative] : [],
-        positiveTags: data?.data?.positive || [],
-        negativeTags: data?.data?.negative || [],
+        tags: data?.data || [],
         isLoading,
         isError: error,
     };
