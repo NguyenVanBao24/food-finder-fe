@@ -16,6 +16,15 @@ interface TagsFilterProps {
 }
 
 export function TagsFilter({ tags, tagsLoading, tempFilters, toggleTag, onShowMore }: TagsFilterProps) {
+    // Sort: selected tags first, then others
+    const sortedTags = [...(tags || [])].sort((a, b) => {
+        const aSelected = (tempFilters.tag_ids || []).includes(a.id);
+        const bSelected = (tempFilters.tag_ids || []).includes(b.id);
+        if (aSelected && !bSelected) return -1;
+        if (!aSelected && bSelected) return 1;
+        return 0;
+    });
+
     return (
         <div className="space-y-3">
             <h3 className="text-sm font-semibold text-gray-900">Đánh giá & Đặc điểm</h3>
@@ -23,7 +32,7 @@ export function TagsFilter({ tags, tagsLoading, tempFilters, toggleTag, onShowMo
                 <div className="text-xs text-gray-400">Đang tải...</div>
             ) : (
                 <div className="flex flex-wrap gap-2">
-                    {(tags || []).slice(0, (tags || []).length > 14 ? 13 : (tags || []).length).map((tag) => (
+                    {sortedTags.slice(0, sortedTags.length > 14 ? 13 : sortedTags.length).map((tag) => (
                         <Button
                             key={tag.id}
                             variant={(tempFilters.tag_ids || []).includes(tag.id) ? 'default' : 'outline'}

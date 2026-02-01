@@ -10,6 +10,13 @@ interface CategoryFilterProps {
 }
 
 export function CategoryFilter({ categories, tempFilters, setTempFilters, onShowMore }: CategoryFilterProps) {
+    // Sort: selected category first, then others
+    const sortedCategories = [...categories].sort((a, b) => {
+        if (a.id === tempFilters.category_id) return -1;
+        if (b.id === tempFilters.category_id) return 1;
+        return 0;
+    });
+
     return (
         <div className="space-y-3">
             <h3 className="text-sm font-semibold text-gray-900">Danh mục</h3>
@@ -22,7 +29,7 @@ export function CategoryFilter({ categories, tempFilters, setTempFilters, onShow
                 >
                     Tất cả
                 </Button>
-                {categories.slice(0, categories.length > 11 ? 10 : categories.length).map((cat) => {
+                {sortedCategories.slice(0, sortedCategories.length > 11 ? 10 : sortedCategories.length).map((cat) => {
                     const IconComponent = (Icons as any)[cat.icon || 'Utensils'] || Icons.Utensils;
                     return (
                         <Button
