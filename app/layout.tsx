@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { Inter, Be_Vietnam_Pro } from 'next/font/google';
 import './globals.css';
 
-// Font Setup
 const inter = Inter({
   subsets: ['latin', 'vietnamese'],
   weight: ['400', '500', '600', '700'],
@@ -17,7 +16,6 @@ const beVietnamPro = Be_Vietnam_Pro({
   display: 'swap',
 });
 
-// Global Metadata (SEO)
 export const metadata: Metadata = {
   title: {
     template: '%s | Food Finder',
