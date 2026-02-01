@@ -11,7 +11,7 @@ export interface TagStat {
 
 const fetcherWithAuth = async (url: string) => {
     const { data: { session } } = await supabase.auth.getSession();
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}${url}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${url}`, {
         headers: {
             ...(session ? { 'Authorization': `Bearer ${session.access_token}` } : {}),
         },
@@ -36,7 +36,7 @@ export function useLocationTags(locationId: string) {
 
         try {
             const { data: { session } } = await supabase.auth.getSession();
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/locations/${locationId}/tags/${tagId}/vote`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/locations/${locationId}/tags/${tagId}/vote`, {
                 method: isVoted ? 'DELETE' : 'POST',
                 headers: {
                     'Authorization': `Bearer ${session?.access_token}`,

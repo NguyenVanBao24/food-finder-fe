@@ -7,7 +7,7 @@ const fetcherWithAuth = async (url: string) => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) throw new Error('Not authenticated');
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}${url}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${url}`, {
         headers: {
             'Authorization': `Bearer ${session.access_token}`,
         },
@@ -37,7 +37,7 @@ export function useFavorites() {
 
         try {
             const { data: { session } } = await supabase.auth.getSession();
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/locations/${locationId}/favorite`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/locations/${locationId}/favorite`, {
                 method: isFavorite ? 'DELETE' : 'POST',
                 headers: {
                     'Authorization': `Bearer ${session?.access_token}`,

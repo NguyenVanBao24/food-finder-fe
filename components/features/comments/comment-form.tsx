@@ -24,7 +24,7 @@ export function CommentForm({ locationId }: CommentFormProps) {
         setLoading(true);
         try {
             const { data: { session } } = await supabase.auth.getSession();
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/locations/${locationId}/comments`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/locations/${locationId}/comments`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

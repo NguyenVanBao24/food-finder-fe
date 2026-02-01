@@ -20,7 +20,7 @@ export function PhotoGallery({ photos, locationId, onRefresh }: PhotoGalleryProp
         setIsUploading(true);
         try {
             const { data: { session } } = await supabase.auth.getSession();
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/photos/location/${locationId}`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/photos/location/${locationId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

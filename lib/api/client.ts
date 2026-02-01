@@ -1,6 +1,6 @@
 import { ApiResponse } from '@/lib/types';
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export async function fetchWithMeta<T>(url: string): Promise<ApiResponse<T>> {
     const res = await fetch(`${BASE_URL}${url}`);
