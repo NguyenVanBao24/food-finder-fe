@@ -3,7 +3,8 @@
 import { MainLayout } from '@/components/layout/main-layout';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, SlidersHorizontal, Loader2 } from 'lucide-react';
+import { Search, SlidersHorizontal, Loader2, X } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { useLocations } from '@/lib/hooks/use-locations';
 import { LocationCard } from '@/components/features/locations/location-card';
 import { useUIStore } from '@/lib/store/ui-store';
@@ -13,8 +14,6 @@ import { useCategories } from '@/lib/hooks/use-categories';
 import { useTags } from '@/lib/hooks/use-tags';
 import { LocationFilters } from '@/lib/types';
 import * as Icons from 'lucide-react';
-
-// Filter Components
 import { CategoryFilter } from '@/components/features/filters/category-filter';
 import { PriceFilter } from '@/components/features/filters/price-filter';
 import { TagsFilter } from '@/components/features/filters/tags-filter';
@@ -23,22 +22,23 @@ import { PopularFilter } from '@/components/features/filters/popular-filter';
 import { FilterModal } from '@/components/features/filters/filter-modal';
 
 export default function HomePage() {
-  const { filters, setFilters } = useUIStore();
+  const { filters, setFilters, resetFilters } = useUIStore();
   const [searchTerm, setSearchTerm] = useState(filters.search || '');
   const [filterMode, setFilterMode] = useState(false);
   const debouncedSearch = useDebounce(searchTerm, 500);
 
-  // Temporary filter state (not applied until user clicks "Áp dụng")
   const [tempFilters, setTempFilters] = useState<Partial<LocationFilters>>({});
 
-  // Full-screen modal state
   const [expandedSection, setExpandedSection] = useState<'category' | 'price' | 'tags' | null>(null);
+
+  useEffect(() => {
+    setSearchTerm(filters.search || '');
+  }, [filters.search]);
 
   useEffect(() => {
     setFilters({ search: debouncedSearch });
   }, [debouncedSearch, setFilters]);
 
-  // Reset temp filters when entering filter mode
   useEffect(() => {
     if (filterMode) {
       setTempFilters({
@@ -72,12 +72,18 @@ export default function HomePage() {
     });
   };
 
-  const toggleTag = (tagId: string) => {
-    const currentTags = tempFilters.tag_ids || [];
+  const toggleTag = (tagId: string, isGlobal = false) => {
+    const targetFilters = isGlobal ? filters : tempFilters;
+    const currentTags = targetFilters.tag_ids || [];
     const newTags = currentTags.includes(tagId)
       ? currentTags.filter(id => id !== tagId)
       : [...currentTags, tagId];
-    setTempFilters({ ...tempFilters, tag_ids: newTags });
+
+    if (isGlobal) {
+      setFilters({ tag_ids: newTags });
+    } else {
+      setTempFilters({ ...tempFilters, tag_ids: newTags });
+    }
   };
 
   const priceRanges = [
@@ -201,6 +207,77 @@ export default function HomePage() {
                 Áp dụng
               </Button>
             </div>
+          </div>
+        )}
+
+        {/* Active Filters Badges */}
+        {!filterMode && (
+          <div className="flex flex-wrap gap-2 animate-in fade-in duration-300">
+            {filters.search && (
+              <Badge variant="secondary" className="pl-3 pr-1 py-1 gap-1 rounded-lg">
+                Tìm: {filters.search}
+                <button onClick={() => setFilters({ search: undefined })} className="hover:bg-slate-200 rounded-full p-0.5">
+                  <X className="h-3 w-3" />
+                </button>
+              </Badge>
+            )}
+
+            {filters.category_id && (
+              <Badge variant="secondary" className="pl-3 pr-1 py-1 gap-1 rounded-lg">
+                Danh mục: {categories.find(c => c.id === filters.category_id)?.name_vi || filters.category_id}
+                <button onClick={() => setFilters({ category_id: undefined })} className="hover:bg-slate-200 rounded-full p-0.5">
+                  <X className="h-3 w-3" />
+                </button>
+              </Badge>
+            )}
+
+            {filters.tag_ids && filters.tag_ids.length > 0 && filters.tag_ids.map(tagId => (
+              <Badge key={tagId} variant="secondary" className="pl-3 pr-1 py-1 gap-1 rounded-lg">
+                {tags?.find(t => t.id === tagId)?.name_vi || tagId}
+                <button onClick={() => toggleTag(tagId, true)} className="hover:bg-slate-200 rounded-full p-0.5">
+                  <X className="h-3 w-3" />
+                </button>
+              </Badge>
+            ))}
+
+            {((filters.min_price !== undefined && filters.min_price > 0) || (filters.max_price !== undefined && filters.max_price < 500000)) && (
+              <Badge variant="secondary" className="pl-3 pr-1 py-1 gap-1 rounded-lg">
+                Giá: {filters.min_price?.toLocaleString()} - {filters.max_price?.toLocaleString()}
+                <button onClick={() => setFilters({ min_price: 0, max_price: 500000 })} className="hover:bg-slate-200 rounded-full p-0.5">
+                  <X className="h-3 w-3" />
+                </button>
+              </Badge>
+            )}
+
+            {filters.max_distance && filters.max_distance !== 10 && (
+              <Badge variant="secondary" className="pl-3 pr-1 py-1 gap-1 rounded-lg">
+                Dưới {filters.max_distance}km
+                <button onClick={() => setFilters({ max_distance: 10 })} className="hover:bg-slate-200 rounded-full p-0.5">
+                  <X className="h-3 w-3" />
+                </button>
+              </Badge>
+            )}
+
+            {filters.is_popular && (
+              <Badge variant="secondary" className="pl-3 pr-1 py-1 gap-1 rounded-lg">
+                Phổ biến
+                <button onClick={() => setFilters({ is_popular: false })} className="hover:bg-slate-200 rounded-full p-0.5">
+                  <X className="h-3 w-3" />
+                </button>
+              </Badge>
+            )}
+
+            {/* Clear All Button */}
+            {(filters.search || filters.category_id || (filters.tag_ids && filters.tag_ids.length > 0) || (filters.min_price && filters.min_price > 0) || (filters.max_price && filters.max_price < 500000) || filters.is_popular || (filters.max_distance && filters.max_distance !== 10)) && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 px-2 text-xs text-muted-foreground hover:text-primary"
+                onClick={() => resetFilters()}
+              >
+                Xóa tất cả
+              </Button>
+            )}
           </div>
         )}
 

@@ -30,6 +30,7 @@ export const metadata: Metadata = {
 };
 
 import { AuthProvider } from '@/components/providers/auth-provider';
+import { ThemeProvider } from '@/components/providers/theme-provider';
 
 export default function RootLayout({
   children,
@@ -38,10 +39,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="vi">
-      <body className={inter.className}>
-        <AuthProvider>
-          {children}
-        </AuthProvider>
+      <body className={`${inter.className} transition-colors duration-300`}>
+        <ThemeProvider>
+          <AuthProvider>
+            {children}
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -7,18 +7,22 @@ interface UIState {
     toggleSidebar: () => void;
     setSidebarOpen: (open: boolean) => void;
     setFilters: (filters: Partial<LocationFilters>) => void;
+    resetFilters: () => void;
 }
+
+const defaultFilters: LocationFilters = {
+    page: 1,
+    limit: 20
+};
 
 export const useUIStore = create<UIState>((set) => ({
     sidebarOpen: true,
-    filters: {
-        page: 1,
-        limit: 20
-    },
+    filters: defaultFilters,
     toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
     setSidebarOpen: (open) => set({ sidebarOpen: open }),
     setFilters: (newFilters) =>
         set((state) => ({
             filters: { ...state.filters, ...newFilters }
         })),
+    resetFilters: () => set({ filters: defaultFilters }),
 }));

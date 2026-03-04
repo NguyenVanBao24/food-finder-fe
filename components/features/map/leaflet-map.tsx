@@ -6,7 +6,6 @@ import { useUIStore } from '@/lib/store/ui-store';
 import { useEffect, useRef } from 'react';
 import type { Map as LeafletMapInstance } from 'leaflet';
 import { cn } from '@/lib/utils';
-// Fix Leaflet marker icons
 import L from 'leaflet';
 import { useLocations } from '@/lib/hooks/use-locations';
 
@@ -21,7 +20,6 @@ L.Icon.Default.mergeOptions({
     shadowUrl: shadowUrl,
 });
 
-// Component to handle map resize
 function MapController() {
     const { sidebarOpen } = useUIStore();
     const map = useMap();
@@ -36,7 +34,6 @@ function MapController() {
     return null;
 }
 
-// Prepare icons (simple version for now)
 const DefaultIcon = L.icon({
     iconUrl: iconUrl,
     shadowUrl: shadowUrl,
@@ -45,10 +42,9 @@ const DefaultIcon = L.icon({
 });
 
 
-// Da Nang geographic bounds
 const DA_NANG_BOUNDS: L.LatLngBoundsExpression = [
-    [15.8500, 107.8000], // South West
-    [16.2500, 108.4500]  // North East
+    [15.8500, 107.8000],
+    [16.2500, 108.4500]
 ];
 
 export default function LeafletMap() {
@@ -58,19 +54,33 @@ export default function LeafletMap() {
     return (
         <div className={cn('w-full h-full transition-all duration-300 relative')}>
             <MapContainer
-                center={[16.0544, 108.2022]} // Da Nang coordinates
-                zoom={13}
-                minZoom={11}
+                center={[16.0544, 108.2022]}
+                // zoom={14}
+                // maxZoom={18}
+                // minZoom={14}
+                zoom={12}
+                maxZoom={18}
+                minZoom={12}
                 maxBounds={DA_NANG_BOUNDS}
                 maxBoundsViscosity={1.0}
                 className="w-full h-full z-0"
                 zoomControl={false}
                 ref={mapRef}
             >
-                <TileLayer
+                {/* <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
+
+                <TileLayer
+                    url="https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}.png"
+                    attribution="© Stadia Maps — OpenStreetMap"
+                /> */}
+                <TileLayer
+                    url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}"
+                    attribution="© Esri — OpenStreetMap contributors"
+                />
+
                 <ZoomControl position="bottomright" />
                 <MapController />
 

@@ -4,16 +4,12 @@ import { Location } from '@/lib/types';
 import LocationDetailClientPage from './client-page';
 
 type Props = {
-    params: { id: string };
-    searchParams: { [key: string]: string | string[] | undefined };
+    params: Promise<{ id: string }>;
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
-// Generate Dynamic Metadata
-export async function generateMetadata(
-    { params }: Props,
-    parent: ResolvingMetadata
-): Promise<Metadata> {
-    const id = params.id;
+export async function generateMetadata({ params }: Props, parent: ResolvingMetadata): Promise<Metadata> {
+    const { id } = await params;
 
     try {
         const { data: location } = await fetchWithMeta<Location>(`/locations/${id}`);
@@ -40,9 +36,11 @@ export async function generateMetadata(
 import { JsonLd } from './json-ld';
 
 export default async function Page({ params }: Props) {
+    const { id } = await params;
+
     let locationData = null;
     try {
-        const { data } = await fetchWithMeta<Location>(`/locations/${params.id}`);
+        const { data } = await fetchWithMeta<Location>(`/locations/${id}`);
         locationData = data;
     } catch (e) {
         // Fallback or handle error - client page handles UI error
@@ -51,7 +49,7 @@ export default async function Page({ params }: Props) {
     return (
         <>
             {locationData && <JsonLd location={locationData} />}
-            <LocationDetailClientPage id={params.id} />
+            <LocationDetailClientPage id={id} />
         </>
     );
 }

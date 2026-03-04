@@ -7,6 +7,7 @@ import { useUIStore } from '@/lib/store/ui-store';
 import { useAuthStore } from '@/lib/store/auth-store';
 import { supabase } from '@/lib/supabase/client';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { ThemeToggle } from '@/components/layout/theme-toggle';
 
 export function Header() {
     const { toggleSidebar } = useUIStore();
@@ -17,7 +18,7 @@ export function Header() {
     };
 
     return (
-        <header className="sticky top-0 z-50 w-full h-16 border-b border-gray-200 bg-white/80 backdrop-blur-md">
+        <header className="sticky top-0 z-50 w-full h-16 border-b border-border bg-surface/80 backdrop-blur-md transition-colors duration-300">
             <div className="flex h-full items-center justify-between px-4 lg:px-6">
                 <div className="flex items-center gap-4">
                     <Button
@@ -33,7 +34,7 @@ export function Header() {
                         <div className="bg-primary rounded-lg p-1.5">
                             <MapIcon className="h-5 w-5 text-white" />
                         </div>
-                        <span className="font-heading font-bold text-xl tracking-tight text-gray-900">
+                        <span className="font-heading font-bold text-xl tracking-tight text-text">
                             Food<span className="text-primary">Finder</span>
                         </span>
                     </Link>
@@ -43,7 +44,8 @@ export function Header() {
                     <Button variant="ghost" size="icon" className="text-gray-500">
                         <Search className="h-5 w-5 lg:hidden" />
                     </Button>
-                    <Button variant="ghost" size="icon" className="text-gray-500">
+                    <ThemeToggle />
+                    <Button variant="ghost" size="icon" className="text-text-muted">
                         <Heart className="h-5 w-5" />
                     </Button>
 

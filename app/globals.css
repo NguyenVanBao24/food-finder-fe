@@ -26,12 +26,54 @@
   /* Fonts */
   --font-heading: 'Be Vietnam Pro', sans-serif;
   --font-body: 'Inter', sans-serif;
+
+  /* Senior Tip: Use semantic transition property for smooth theme switching */
+  --transition-theme: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+}
+
+@variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-primary: #FF6B6B;
+  --color-primary-light: #FF8787;
+  --color-primary-dark: #FA5252;
+
+  --color-secondary: #22B8CF;
+  --color-secondary-light: #3BC9DB;
+  --color-secondary-dark: #15AABF;
+
+  --color-accent-yellow: #FFD43B;
+  --color-accent-green: #51CF66;
+  --color-accent-purple: #9775FA;
+
+  /* Neutrals - Light Mode */
+  --color-bg: #F8F9FA;
+  --color-surface: #FFFFFF;
+  --color-border: #E9ECEF;
+  --color-text: #212529;
+  --color-text-muted: #495057;
+}
+
+/* Neutrals - Dark Mode Overrides */
+@variant dark {
+  /* Senior Tip: Use deep slate/navy for a more premium "Midnight" feel */
+  --color-bg: #020617;
+  /* Slate 950+ */
+  --color-surface: #0F172A;
+  /* Slate 900 */
+  --color-border: #1E293B;
+  /* Slate 800 */
+  --color-text: #F8FAFC;
+  /* Slate 50 */
+  --color-text-muted: #94A3B8;
+  /* Slate 400 */
 }
 
 /* Base Styles */
 @layer base {
   body {
-    @apply font-body text-gray-900 bg-gray-50;
+    @apply font-body bg-bg text-text;
+    transition: var(--transition-theme);
     -webkit-font-smoothing: antialiased;
   }
 

@@ -9,7 +9,7 @@ interface AuthState {
     setUser: (user: User | null) => void;
     setSession: (session: Session | null) => void;
     initialize: () => Promise<void>;
-    listFavorites: () => Promise<void>; // Will implement later
+    listFavorites: () => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
